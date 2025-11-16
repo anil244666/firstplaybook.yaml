@@ -1,16 +1,23 @@
----
-- hosts: all
-  become: true
+- name: Setup Apache web server
+  hosts: webservers
+  become: yes
+
   tasks:
-    - name: Install apache httpd
-      ansible.builtin.apt:
-        name: apache2
+    - name: Install Apache (httpd) on RedHat/Amazon Linux
+      yum:
+        name: httpd
         state: present
-        update_cache: yes
-    - name: Copy file with owner and permissions
-      ansible.builtin.copy:
+
+    - name: Ensure Apache is running
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: Deploy index.html
+      copy:
         src: index.html
-        dest: /var/www/html
+        dest: /var/www/html/index.html
         owner: root
         group: root
         mode: '0644'
